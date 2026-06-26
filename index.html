@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Parallel Activity Hub</title>
+  <meta name="description" content="Art workshops in unexpected places across Dubai. No skills needed. Just presence."/>
+  <meta name="theme-color" content="#C4796A"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="PAHub"/>
+  <link rel="manifest" href="./manifest.json"/>
+  <link rel="apple-touch-icon" href="./icons/icon-192.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --charcoal: #1C1917;
+      --cream: #F5EFE6;
+      --rose: #C4796A;
+      --rose-dark: #A35B59;
+      --sage: #7A9E7E;
+      --sand: #E8D5B7;
+      --muted: #8B7E74;
+      --card-bg: #252220;
+      --border: rgba(245,239,230,0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--charcoal);
+      color: var(--cream);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SPLASH ── */
+    #splash {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--charcoal);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1rem;
+      transition: opacity 0.6s ease;
+    }
+    #splash.hidden { opacity: 0; pointer-events: none; }
+    .splash-logo {
+      width: 80px; height: 80px;
+      background: var(--rose);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      color: var(--cream);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .splash-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--sand);
+    }
+
+    /* ── APP SHELL ── */
+    #app {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(28,25,23,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-brand {
+      display: flex; align-items: center; gap: 0.65rem;
+    }
+    .header-dot {
+      width: 30px; height: 30px;
+      background: var(--rose);
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      color: var(--cream);
+    }
+    .header-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+    .header-sub {
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .header-ig {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.7rem;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    .header-ig:hover { color: var(--rose); border-color: var(--rose); }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* ── SECTIONS ── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 3rem 1.4rem 2.5rem;
+      overflow: hidden;
+    }
+    .hero-bg-art {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .hero-eyebrow {
+      position: relative; z-index: 1;
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 0.9rem;
+    }
+    .hero-headline {
+      position: relative; z-index: 1;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      line-height: 1.15;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--rose);
+    }
+    .hero-tagline {
+      position: relative; z-index: 1;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--sand);
+      max-width: 340px;
+      margin-bottom: 2rem;
+    }
+    .hero-cta {
+      position: relative; z-index: 1;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--rose);
+      color: var(--cream);
+      padding: 0.85rem 1.6rem;
+      border-radius: 3px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .hero-cta:active { transform: scale(0.97); background: var(--rose-dark); }
+    .hero-stats {
+      position: relative; z-index: 1;
+      display: flex; gap: 2rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .hero-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--cream);
+    }
+    .hero-stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── BRUSHSTROKE DIVIDER ── */
+    .brushstroke {
+      width: 100%;
+      height: 28px;
+      overflow: hidden;
+    }
+
+    /* ── SECTION LABELS ── */
+    .section-label {
+      padding: 1.8rem 1.4rem 1rem;
+      display: flex; align-items: baseline; gap: 1rem;
+    }
+    .section-label h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+    }
+    .section-label span {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── WORKSHOP CARDS ── */
+    .workshops-list {
+      padding: 0 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .workshop-card {
+      background: var(--card-bg);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s;
+    }
+    .workshop-card:active { transform: scale(0.985); }
+
+    .card-image-area {
+      width: 100%;
+      height: 160px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-image-area img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .card-image-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .card-badge {
+      position: absolute;
+      top: 0.7rem; right: 0.7rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .badge-upcoming { background: var(--sage); color: #fff; }
+    .badge-featured { background: var(--rose); color: #fff; }
+    .badge-past { background: rgba(255,255,255,0.15); color: var(--cream); }
+    .badge-soldout { background: var(--muted); color: #fff; }
+
+    .card-body { padding: 1.1rem; }
+    .card-date-venue {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.72rem;
+      color: var(--rose);
+      margin-bottom: 0.55rem;
+      font-weight: 500;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--cream);
+    }
+    .card-price span {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      display: block;
+      margin-top: -2px;
+    }
+    .card-btn {
+      padding: 0.6rem 1.1rem;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--rose); color: var(--cream); }
+    .btn-primary:active { background: var(--rose-dark); }
+    .btn-outline { background: transparent; color: var(--cream); border: 1px solid var(--border); }
+    .btn-disabled { background: var(--muted); color: rgba(255,255,255,0.4); cursor: default; opacity: 0.6; }
+
+    /* ── FEATURED STRIP (on home) ── */
+    .featured-strip {
+      padding: 0 1rem 1rem;
+    }
+    .featured-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 0.9rem;
+      padding: 0 0.4rem;
+    }
+
+    /* ── PAST GALLERY ── */
+    .past-grid {
+      padding: 0 1rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+    }
+    .past-tile {
+      background: var(--card-bg);
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 1;
+      position: relative;
+      cursor: pointer;
+    }
+    .past-tile .tile-emoji {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+    .past-tile-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(28,25,23,0.9) 0%, transparent 50%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0.7rem;
+    }
+    .past-tile-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.8rem;
+      line-height: 1.2;
+    }
+    .past-tile-date {
+      font-size: 0.62rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    /* ── ABOUT ── */
+    .about-hero {
+      padding: 2.5rem 1.4rem 2rem;
+      text-align: center;
+    }
+    .about-logo-big {
+      width: 80px; height: 80px;
+      background: var(--rose);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      color: var(--cream);
+      margin: 0 auto 1.4rem;
+    }
+    .about-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      margin-bottom: 0.8rem;
+    }
+    .about-philosophy {
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: var(--sand);
+      max-width: 340px;
+      margin: 0 auto;
+    }
+    .about-philosophy .highlight {
+      color: var(--rose);
+      font-style: italic;
+    }
+    .about-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.8rem 1.4rem;
+    }
+    .about-section {
+      padding: 0 1.4rem 1.5rem;
+    }
+    .about-section h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+      color: var(--sand);
+    }
+    .about-section p {
+      font-size: 0.83rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+    .about-links {
+      padding: 0 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .about-link-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1rem 1.2rem;
+      display: flex; align-items: center; gap: 1rem;
+      text-decoration: none;
+      color: var(--cream);
+      transition: border-color 0.2s;
+    }
+    .about-link-card:active { border-color: var(--rose); }
+    .about-link-icon { font-size: 1.4rem; }
+    .about-link-label { font-size: 0.8rem; color: var(--muted); }
+    .about-link-value { font-size: 0.9rem; font-weight: 500; }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      background: rgba(28,25,23,0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+    }
+    .nav-tab {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+      padding: 0.5rem 0.2rem;
+      background: none; border: none;
+      color: var(--muted);
+      font-size: 0.62rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-tab.active { color: var(--rose); }
+    .nav-icon { font-size: 1.3rem; line-height: 1; }
+    .nav-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--rose);
+      margin: 0 auto;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .nav-tab.active .nav-dot { opacity: 1; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7);
+      align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      width: 100%;
+      max-height: 90vh;
+      background: var(--card-bg);
+      border-radius: 16px 16px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0.8rem auto 0;
+    }
+    .modal-content { padding: 1.5rem; }
+    .modal-badge { margin-bottom: 0.8rem; display: inline-block; }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .modal-meta {
+      font-size: 0.78rem;
+      color: var(--rose);
+      margin-bottom: 1.2rem;
+    }
+    .modal-desc {
+      font-size: 0.85rem;
+      line-height: 1.75;
+      color: var(--sand);
+      margin-bottom: 1.5rem;
+    }
+    .modal-details {
+      display: flex; flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 1.8rem;
+    }
+    .modal-detail-row {
+      display: flex; gap: 0.8rem; align-items: flex-start;
+    }
+    .modal-detail-icon { font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+    .modal-detail-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .modal-detail-value { font-size: 0.85rem; }
+    .modal-actions {
+      display: flex; gap: 0.8rem;
+    }
+    .modal-actions .card-btn { flex: 1; text-align: center; padding: 0.85rem; }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      background: var(--border);
+      border: none; color: var(--cream);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── INSTALL BANNER ── */
+    #install-banner {
+      display: none;
+      position: fixed;
+      bottom: 80px; left: 1rem; right: 1rem;
+      z-index: 150;
+      background: var(--rose-dark);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    #install-banner.hidden { display: none !important; }
+    .install-text { font-size: 0.8rem; line-height: 1.4; }
+    .install-text strong { display: block; font-size: 0.85rem; }
+    .install-btn {
+      background: var(--cream);
+      color: var(--charcoal);
+      border: none;
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .install-close {
+      background: none; border: none;
+      color: rgba(255,255,255,0.6);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.2rem;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .empty-state .emoji { font-size: 2.5rem; margin-bottom: 1rem; }
+    .empty-state p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">P</div>
+  <div class="splash-name">Parallel Activity Hub</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="header-dot">P</div>
+      <div>
+        <div class="header-title">Parallel Activity Hub</div>
+        <div class="header-sub">Art in unexpected places · Dubai</div>
+      </div>
+    </div>
+    <a href="https://www.instagram.com/parallelactivityhub/" target="_blank" class="header-ig">@pah ↗</a>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HOME TAB -->
+    <section id="tab-home" class="section active">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-bg-art">
+          <svg width="100%" height="100%" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="340" cy="40" r="120" fill="rgba(196,121,106,0.07)"/>
+            <circle cx="60" cy="220" r="90" fill="rgba(122,158,126,0.06)"/>
+            <ellipse cx="200" cy="130" rx="300" ry="80" fill="none" stroke="rgba(196,121,106,0.05)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="hero-eyebrow">Dubai · Pop-up Art Workshops</div>
+        <h1 class="hero-headline">Make something<br/><em>with your hands</em></h1>
+        <p class="hero-tagline">A quiet, creative lane running alongside the rush of everyday life. No skills needed — just presence.</p>
+        <button class="hero-cta" onclick="switchTab('upcoming')">
+          <span>↓</span> See upcoming workshops
+        </button>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-num">AED 85</div>
+            <div class="hero-stat-label">per workshop</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">All</div>
+            <div class="hero-stat-label">materials included</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">0</div>
+            <div class="hero-stat-label">skills needed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brushstroke divider -->
+      <div class="brushstroke">
+        <svg viewBox="0 0 400 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" width="100%" height="28">
+          <path d="M0,14 C30,6 70,22 120,14 C160,8 200,20 250,12 C290,6 340,18 400,10 L400,28 L0,28 Z" fill="rgba(196,121,106,0.12)"/>
+          <path d="M0,18 C50,10 100,24 160,16 C210,10 260,22 320,15 C355,10 380,20 400,14 L400,28 L0,28 Z" fill="rgba(196,121,106,0.06)"/>
+        </svg>
+      </div>
+
+      <!-- Featured upcoming -->
+      <div id="home-featured"></div>
+
+      <!-- Quick past -->
+      <div class="section-label">
+        <h2>Past workshops</h2>
+        <span>Scroll all →</span>
+      </div>
+      <div id="home-past-grid" class="past-grid"></div>
+      <div style="padding: 0 1rem 2rem; text-align:center;">
+        <button class="card-btn btn-outline" onclick="switchTab('past')" style="padding:0.7rem 1.8rem;">View all past workshops</button>
+      </div>
+    </section>
+
+    <!-- UPCOMING TAB -->
+    <section id="tab-upcoming" class="section">
+      <div class="section-label">
+        <h2>Upcoming</h2>
+        <span>Book your spot</span>
+      </div>
+      <div id="upcoming-list" class="workshops-list"></div>
+    </section>
+
+    <!-- PAST TAB -->
+    <section id="tab-past" class="section">
+      <div class="section-label">
+        <h2>Past workshops</h2>
+        <span>Memories made</span>
+      </div>
+      <div id="past-grid-full" class="past-grid" style="padding-bottom:2rem;"></div>
+    </section>
+
+    <!-- ABOUT TAB -->
+    <section id="tab-about" class="section">
+      <div class="about-hero">
+        <div class="about-logo-big">P</div>
+        <div class="about-name">Parallel Activity Hub</div>
+        <p class="about-philosophy">
+          We believe everyone deserves a <span class="highlight">parallel</span> — a quiet, creative lane running alongside the rush of everyday life. We craft spaces where you can pause, make with your hands, and reconnect with yourself.<br/><br/>
+          No noise. No pressure. Just presence. 🎨
+        </p>
+      </div>
+      <div class="about-divider"></div>
+      <div class="about-section">
+        <h3>How it works</h3>
+        <p>Each workshop is hosted at a different venue across Dubai — cafés, gardens, and interesting spaces. All materials are included. You just show up, make something, and take it home.</p>
+      </div>
+      <div class="about-section" style="padding-top:0.5rem;">
+        <h3>Payment</h3>
+        <p>We use Ziina for quick, secure payments. A payment link is shared with each workshop registration. Pay before the deadline to confirm your spot.</p>
+      </div>
+      <div class="about-divider"></div>
+      <div class="about-links">
+        <a href="https://www.instagram.com/parallelactivityhub/" target="_blank" class="about-link-card">
+          <div class="about-link-icon">📸</div>
+          <div>
+            <div class="about-link-label">Follow us</div>
+            <div class="about-link-value">@parallelactivityhub</div>
+          </div>
+        </a>
+        <a href="mailto:hello@parallelactivityhub.com" class="about-link-card">
+          <div class="about-link-icon">✉️</div>
+          <div>
+            <div class="about-link-label">Get in touch</div>
+            <div class="about-link-value">hello@parallelactivityhub.com</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" data-tab="home" onclick="switchTab('home')">
+      <div class="nav-icon">🏠</div>
+      <div>Home</div>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-tab" data-tab="upcoming" onclick="switchTab('upcoming')">
+      <div class="nav-icon">🎨</div>
+      <div>Upcoming</div>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-tab" data-tab="past" onclick="switchTab('past')">
+      <div class="nav-icon">📸</div>
+      <div>Past</div>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-tab" data-tab="about" onclick="switchTab('about')">
+      <div class="nav-icon">✨</div>
+      <div>About</div>
+      <div class="nav-dot"></div>
+    </button>
+  </nav>
+</div>
+
+<!-- WORKSHOP MODAL -->
+<div class="modal-overlay" id="workshop-modal" onclick="closeModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-content" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner" class="hidden">
+  <div class="install-text">
+    <strong>Add to home screen</strong>
+    Install the PAHub app for quick access
+  </div>
+  <button class="install-btn" id="install-btn">Install</button>
+  <button class="install-close" onclick="document.getElementById('install-banner').classList.add('hidden')">×</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// WORKSHOP DATA — update this section each time
+// ─────────────────────────────────────────────
+const WORKSHOPS = [
+  // ── UPCOMING ──
+  {
+    id: 'w1',
+    status: 'featured', // 'upcoming' | 'featured' | 'soldout'
+    emoji: '🎭',
+    bgColor: '#3a2a2a',
+    title: "Majnu Bhai's Bollywood Painting Experience",
+    date: 'Sunday, June 28, 2025',
+    time: '12pm – 1:30pm',
+    venue: 'Homebrew Coffee',
+    location: 'Jumeirah Garden City, Satwa',
+    price: 'AED 85',
+    includes: 'All art materials, 30×40cm canvas',
+    description: "Recreate the legendary Majnu Bhai painting from the Bollywood classic Welcome in this fun, fully-guided art experience. No painting skills needed. Bring your love for Bollywood, laughter, and creativity, and take home your very own 30×40cm masterpiece!",
+    registrationLink: 'https://docs.google.com/forms/d/e/1FAIpQLSdYzmpjEq2176YxC9cX5eKG5qycBATlYYlmQn4BRG2YutA7rA/viewform',
+    paymentLink: 'https://pay.ziina.com/pahub/F8n0Vpo_p?source=app',
+    paymentDeadline: 'Before 10pm, Saturday June 27',
+    spotsLeft: 8,
+  },
+  // ── Add more upcoming workshops here ──
+
+  // ── PAST ──
+  {
+    id: 'p1',
+    status: 'past',
+    emoji: '🌸',
+    bgColor: '#2a3028',
+    title: 'Floral Watercolour Evening',
+    date: 'May 2025',
+    venue: 'The Archive, Al Quoz',
+    description: 'A relaxed evening session painting loose florals in watercolour. Participants took home a framed A4 piece.',
+    price: 'AED 85',
+  },
+  {
+    id: 'p2',
+    status: 'past',
+    emoji: '🎑',
+    bgColor: '#282a35',
+    title: 'Japanese Wave Print Workshop',
+    date: 'April 2025',
+    venue: 'Café Rider, JLT',
+    description: 'Inspired by Hokusai — guests learned the basics of block printing and created their own wave compositions.',
+    price: 'AED 85',
+  },
+  {
+    id: 'p3',
+    status: 'past',
+    emoji: '🖼️',
+    bgColor: '#312820',
+    title: 'Abstract Portrait Night',
+    date: 'March 2025',
+    venue: 'Nightjar Coffee, DIFC',
+    description: 'Expressive portraits using bold colour — no reference, no rules. One of our most popular evenings.',
+    price: 'AED 95',
+  },
+  {
+    id: 'p4',
+    status: 'past',
+    emoji: '🌿',
+    bgColor: '#1e2a22',
+    title: 'Botanical Illustration',
+    date: 'February 2025',
+    venue: 'Tom & Serg, Al Quoz',
+    description: 'Detailed botanical illustrations with pen and watercolour wash. A meditative, focused session.',
+    price: 'AED 85',
+  },
+];
+
+// ─────────────────────────────────────────────
+// RENDER FUNCTIONS
+// ─────────────────────────────────────────────
+
+function badgeHTML(status) {
+  const map = {
+    upcoming: ['badge-upcoming', 'Upcoming'],
+    featured: ['badge-featured', '★ Featured'],
+    soldout: ['badge-soldout', 'Sold Out'],
+    past: ['badge-past', 'Past'],
+  };
+  const [cls, label] = map[status] || map.upcoming;
+  return `<span class="card-badge ${cls}">${label}</span>`;
+}
+
+function renderUpcomingCard(w) {
+  const isSoldOut = w.status === 'soldout';
+  const btnHTML = isSoldOut
+    ? `<span class="card-btn btn-disabled">Sold out</span>`
+    : `<button class="card-btn btn-primary" onclick="openModal('${w.id}')">Register →</button>`;
+
+  return `
+    <div class="workshop-card" onclick="${isSoldOut ? '' : `openModal('${w.id}')`}">
+      <div class="card-image-area" style="background:${w.bgColor};">
+        <div class="card-image-placeholder">${w.emoji}</div>
+        ${badgeHTML(w.status)}
+      </div>
+      <div class="card-body">
+        <div class="card-date-venue">📅 ${w.date} · ${w.venue}</div>
+        <div class="card-title">${w.title}</div>
+        <div class="card-desc">${w.description.slice(0, 100)}…</div>
+        <div class="card-footer">
+          <div class="card-price">${w.price}<span>All materials included</span></div>
+          ${btnHTML}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderPastTile(w) {
+  return `
+    <div class="past-tile" onclick="openModal('${w.id}')">
+      <div class="tile-emoji" style="background:${w.bgColor};">${w.emoji}</div>
+      <div class="past-tile-overlay">
+        <div class="past-tile-name">${w.title}</div>
+        <div class="past-tile-date">${w.date}</div>
+      </div>
+    </div>`;
+}
+
+function renderModal(w) {
+  const isPast = w.status === 'past';
+  const isSoldOut = w.status === 'soldout';
+  const actionBtns = isPast
+    ? `<button class="card-btn btn-outline" style="flex:1;padding:0.85rem;" onclick="closeModalDirect()">Close</button>`
+    : isSoldOut
+    ? `<span class="card-btn btn-disabled" style="flex:1;text-align:center;padding:0.85rem;">Sold out</span>`
+    : `
+      <a href="${w.paymentLink || '#'}" target="_blank" class="card-btn btn-outline" style="flex:1;text-align:center;padding:0.85rem;">Pay via Ziina</a>
+      <a href="${w.registrationLink}" target="_blank" class="card-btn btn-primary" style="flex:1;text-align:center;padding:0.85rem;">Register now</a>
+    `;
+
+  return `
+    <span class="modal-badge">${badgeHTML(w.status)}</span>
+    <div class="modal-title">${w.title}</div>
+    <div class="modal-meta">📅 ${w.date}${w.time ? ' · ' + w.time : ''}</div>
+    <div class="modal-desc">${w.description}</div>
+    <div class="modal-details">
+      <div class="modal-detail-row">
+        <div class="modal-detail-icon">📍</div>
+        <div>
+          <div class="modal-detail-label">Venue</div>
+          <div class="modal-detail-value">${w.venue}${w.location ? ', ' + w.location : ''}</div>
+        </div>
+      </div>
+      <div class="modal-detail-row">
+        <div class="modal-detail-icon">💰</div>
+        <div>
+          <div class="modal-detail-label">Price</div>
+          <div class="modal-detail-value">${w.price}${w.includes ? ' · ' + w.includes : ''}</div>
+        </div>
+      </div>
+      ${w.paymentDeadline ? `
+      <div class="modal-detail-row">
+        <div class="modal-detail-icon">⏰</div>
+        <div>
+          <div class="modal-detail-label">Payment deadline</div>
+          <div class="modal-detail-value">${w.paymentDeadline}</div>
+        </div>
+      </div>` : ''}
+      ${w.spotsLeft ? `
+      <div class="modal-detail-row">
+        <div class="modal-detail-icon">🎟️</div>
+        <div>
+          <div class="modal-detail-label">Availability</div>
+          <div class="modal-detail-value">${w.spotsLeft} spots left</div>
+        </div>
+      </div>` : ''}
+    </div>
+    <div class="modal-actions">${actionBtns}</div>
+  `;
+}
+
+// ─────────────────────────────────────────────
+// POPULATE
+// ─────────────────────────────────────────────
+
+function populate() {
+  const upcoming = WORKSHOPS.filter(w => w.status !== 'past');
+  const past = WORKSHOPS.filter(w => w.status === 'past');
+  const featured = upcoming.find(w => w.status === 'featured') || upcoming[0];
+
+  // Home — featured
+  if (featured) {
+    document.getElementById('home-featured').innerHTML = `
+      <div class="featured-strip">
+        <div class="featured-label">✦ Featured workshop</div>
+        ${renderUpcomingCard(featured)}
+      </div>`;
+  } else {
+    document.getElementById('home-featured').innerHTML = `
+      <div class="empty-state">
+        <div class="emoji">🎨</div>
+        <p>Next workshop coming soon.<br/>Follow us on Instagram for announcements.</p>
+      </div>`;
+  }
+
+  // Home — past grid (show 4)
+  document.getElementById('home-past-grid').innerHTML = past.slice(0, 4).map(renderPastTile).join('');
+
+  // Upcoming tab
+  const upcomingList = document.getElementById('upcoming-list');
+  if (upcoming.length) {
+    upcomingList.innerHTML = upcoming.map(renderUpcomingCard).join('');
+  } else {
+    upcomingList.innerHTML = `
+      <div class="empty-state">
+        <div class="emoji">🌿</div>
+        <p>No workshops scheduled just yet.<br/>Check back soon or follow us on Instagram.</p>
+        <br/>
+        <a href="https://www.instagram.com/parallelactivityhub/" target="_blank" class="card-btn btn-outline" style="display:inline-block;margin-top:0.5rem;">@parallelactivityhub</a>
+      </div>`;
+  }
+
+  // Past full grid
+  document.getElementById('past-grid-full').innerHTML = past.map(renderPastTile).join('');
+}
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+
+function switchTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelector(`.nav-tab[data-tab="${name}"]`).classList.add('active');
+  main.scrollTop = 0;
+}
+
+const main = document.querySelector('main');
+
+// ─────────────────────────────────────────────
+// MODAL
+// ─────────────────────────────────────────────
+
+function openModal(id) {
+  const w = WORKSHOPS.find(x => x.id === id);
+  if (!w) return;
+  document.getElementById('modal-body').innerHTML = renderModal(w);
+  document.getElementById('workshop-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModalDirect() {
+  document.getElementById('workshop-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('workshop-modal')) {
+    closeModalDirect();
+  }
+}
+
+// ─────────────────────────────────────────────
+// PWA INSTALL
+// ─────────────────────────────────────────────
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => {
+    document.getElementById('install-banner').classList.remove('hidden');
+  }, 3000);
+});
+
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('install-banner').classList.add('hidden');
+});
+
+// ─────────────────────────────────────────────
+// SERVICE WORKER
+// ─────────────────────────────────────────────
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+
+populate();
+
+// Remove splash after brief moment
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hidden');
+}, 1200);
+</script>
+</body>
+</html>
